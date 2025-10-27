@@ -1,0 +1,414 @@
+<!-- File: home.html -->
+ {% extends "base/base.html" %}
+
+{% block title %}Home| Admin Dashboard{% endblock %}
+
+{% block header %}Settings{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products</title>
+    <style>
+        /* --- General Styling --- */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --background-color: #f8f9fa;
+            --surface-color: #ffffff;
+            --text-color: #343a40;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* --- Main Container --- */
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            background-color: var(--surface-color);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 25px var(--shadow-color);
+        }
+
+        /* --- Header & Filters --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filters input, .filters select {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .filters input:focus, .filters select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+        }
+
+        /* --- Product Grid --- */
+        #productGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .product-category {
+            background-color: #e9ecef;
+            color: var(--secondary-color);
+            font-size: 0.8em;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .btn-add-cart {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .btn-add-cart:hover {
+            background-color: #0056b3;
+        }
+        
+        #noResultsMessage {
+            text-align: center;
+            font-size: 1.2em;
+            color: var(--secondary-color);
+            grid-column: 1 / -1; /* Span all columns */
+            padding: 40px;
+        }
+
+        /* --- Add Product Form --- */
+        .form-section {
+            background-color: #fdfdff;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 40px;
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        #addProductForm {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .btn-submit {
+            padding: 12px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            height: 47px;
+        }
+        
+        .btn-submit:hover {
+            background-color: #218838;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #addProductForm {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Products</h1>
+            <div class="filters">
+                <input type="text" id="searchInput" placeholder="Search products...">
+                <select id="categoryFilter">
+                    <option value="all">All Categories</option>
+                    </select>
+            </div>
+        </header>
+
+        <main>
+            <div id="productGrid">
+                </div>
+        </main>
+
+        <section class="form-section">
+            <h2>Add New Product</h2>
+            <form id="addProductForm">
+                <div class="form-group">
+                    <label for="newProductName">Product Name</label>
+                    <input type="text" id="newProductName" required>
+                </div>
+                <div class="form-group">
+                    <label for="newProductCategory">Category</label>
+                    <input type="text" id="newProductCategory" required>
+                </div>
+                <div class="form-group">
+                    <label for="newProductPrice">Price (₹)</label>
+                    <input type="number" id="newProductPrice" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="newProductImage">Image URL</label>
+                    <input type="url" id="newProductImage" placeholder="https://..." required>
+                </div>
+                <button type="submit" class="btn-submit">Add Product</button>
+            </form>
+        </section>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- Sample Data ---
+        let products = [
+            { id: 1, name: 'Wireless Bluetooth Headphones', category: 'Electronics', price: 2499, imageUrl: 'https://picsum.photos/id/1082/400/300' },
+            { id: 2, name: 'Modern Leather Sofa', category: 'Furniture', price: 45000, imageUrl: 'https://picsum.photos/id/101/400/300' },
+            { id: 3, name: 'Classic Cotton T-Shirt', category: 'Apparel', price: 799, imageUrl: 'https://picsum.photos/id/102/400/300' },
+            { id: 4, name: 'Smart Fitness Tracker', category: 'Electronics', price: 3999, imageUrl: 'https://picsum.photos/id/160/400/300' },
+            { id: 5, name: 'The Alchemist', category: 'Books', price: 349, imageUrl: 'https://picsum.photos/id/30/400/300' },
+            { id: 6, name: 'Wooden Dining Table', category: 'Furniture', price: 22000, imageUrl: 'https://picsum.photos/id/25/400/300' },
+            { id: 7, name: 'Running Sneakers', category: 'Footwear', price: 2999, imageUrl: 'https://picsum.photos/id/21/400/300' },
+            { id: 8, name: 'Organic Green Tea', category: 'Groceries', price: 450, imageUrl: 'https://picsum.photos/id/312/400/300' },
+            { id: 9, name: 'Men\'s Denim Jeans', category: 'Apparel', price: 1899, imageUrl: 'https://picsum.photos/id/103/400/300' },
+            { id: 10, name: '4K Ultra HD Smart TV', category: 'Electronics', price: 38999, imageUrl: 'https://picsum.photos/id/0/400/300' }
+        ];
+
+        // --- DOM Elements ---
+        const productGrid = document.getElementById('productGrid');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const addProductForm = document.getElementById('addProductForm');
+
+        // --- Functions ---
+
+        /**
+         * Renders products to the page.
+         * @param {Array} productsToRender - An array of product objects.
+         */
+        const renderProducts = (productsToRender) => {
+            productGrid.innerHTML = ''; // Clear existing products
+            if (productsToRender.length === 0) {
+                productGrid.innerHTML = `<p id="noResultsMessage">No products found matching your criteria.</p>`;
+                return;
+            }
+
+            productsToRender.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <img src="${product.imageUrl}" alt="${product.name}">
+                    <div class="product-info">
+                        <span class="product-category">${product.category}</span>
+                        <h3>${product.name}</h3>
+                        <div class="product-footer">
+                            <span class="product-price">₹${product.price.toLocaleString('en-IN')}</span>
+                            <button class="btn-add-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+                productGrid.appendChild(productCard);
+            });
+        };
+        
+        /**
+         * Populates the category filter dropdown with unique categories from the product list.
+         */
+        const populateCategories = () => {
+            const categories = [...new Set(products.map(p => p.category))];
+            categories.sort().forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categoryFilter.appendChild(option);
+            });
+        };
+
+        /**
+         * Applies filters based on search term and selected category.
+         */
+        const applyFilters = () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedCategory = categoryFilter.value;
+
+            let filteredProducts = products.filter(product => {
+                const nameMatch = product.name.toLowerCase().includes(searchTerm);
+                const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
+                return nameMatch && categoryMatch;
+            });
+            
+            renderProducts(filteredProducts);
+        };
+        
+        /**
+         * Adds a new product to the list.
+         * @param {Event} event - The form submission event.
+         */
+        const addNewProduct = (event) => {
+            event.preventDefault();
+
+            const name = document.getElementById('newProductName').value.trim();
+            const category = document.getElementById('newProductCategory').value.trim();
+            const price = parseFloat(document.getElementById('newProductPrice').value);
+            const imageUrl = document.getElementById('newProductImage').value.trim();
+            
+            if(name && category && !isNaN(price) && imageUrl) {
+                const newProduct = {
+                    id: products.length + 1,
+                    name,
+                    category,
+                    price,
+                    imageUrl
+                };
+                
+                products.push(newProduct); // Add to the main array
+                addProductForm.reset(); // Clear form fields
+                applyFilters(); // Re-render the grid with current filters
+                
+                // If the new category doesn't exist in the filter, add it
+                if (![...categoryFilter.options].some(opt => opt.value === category)) {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    categoryFilter.appendChild(option);
+                }
+            } else {
+                alert('Please fill out all fields correctly.');
+            }
+        };
+
+        // --- Event Listeners ---
+        searchInput.addEventListener('keyup', applyFilters);
+        categoryFilter.addEventListener('change', applyFilters);
+        addProductForm.addEventListener('submit', addNewProduct);
+
+        // --- Initial Load ---
+        populateCategories();
+        renderProducts(products);
+    });
+</script>
+
+</body>
+</html>
+{% endblock %}

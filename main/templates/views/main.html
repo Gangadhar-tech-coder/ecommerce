@@ -1,0 +1,200 @@
+{% extends "base/base.html" %}
+
+{% block title %}Settings | Admin Dashboard{% endblock %}
+
+{% block header %}Settings{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini eCommerce Website</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    header {
+      background: #333;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    #cart-btn {
+      background: #ff9900;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+    }
+
+    .product {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .product img {
+      max-width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .product h3 {
+      margin: 0.5rem 0;
+    }
+
+    .product p {
+      color: #555;
+    }
+
+    .product button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-top: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .cart-popup {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      background: white;
+      border: 1px solid #ccc;
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 999;
+      padding: 1rem;
+    }
+
+    .cart-popup h2 {
+      margin-top: 0;
+    }
+
+    .cart-item {
+      border-bottom: 1px solid #eee;
+      padding: 0.5rem 0;
+    }
+
+    .cart-total {
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 500px) {
+      .products {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>My eCommerce</h1>
+    <button id="cart-btn">🛒 Cart (<span id="cart-count">0</span>)</button>
+  </header>
+
+  <div class="products" id="product-list">
+    <!-- Products will be dynamically injected here -->
+  </div>
+
+  <div class="cart-popup" id="cart-popup">
+    <h2>Your Cart</h2>
+    <div id="cart-items"></div>
+    <p class="cart-total">Total: ₹<span id="cart-total">0</span></p>
+  </div>
+
+  <script>
+    const products = [
+      { id: 1, name: "Wireless Headphones", price: 1500, image: "https://via.placeholder.com/200x150?text=Headphones" },
+      { id: 2, name: "Smartphone", price: 12000, image: "https://via.placeholder.com/200x150?text=Smartphone" },
+      { id: 3, name: "Smartwatch", price: 3500, image: "https://via.placeholder.com/200x150?text=Watch" },
+      { id: 4, name: "Bluetooth Speaker", price: 2200, image: "https://via.placeholder.com/200x150?text=Speaker" },
+      { id: 5, name: "Laptop", price: 48000, image: "https://via.placeholder.com/200x150?text=Laptop" }
+    ];
+
+    const cart = [];
+
+    function renderProducts() {
+      const productList = document.getElementById("product-list");
+      productList.innerHTML = "";
+
+      products.forEach(product => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+          <img src="${product.image}" alt="${product.name}">
+          <h3>${product.name}</h3>
+          <p>₹${product.price}</p>
+          <button onclick="addToCart(${product.id})">Add to Cart</button>
+        `;
+        productList.appendChild(div);
+      });
+    }
+
+    function addToCart(id) {
+      const product = products.find(p => p.id === id);
+      cart.push(product);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      document.getElementById("cart-count").textContent = cart.length;
+      const cartItems = document.getElementById("cart-items");
+      cartItems.innerHTML = "";
+
+      let total = 0;
+      cart.forEach(item => {
+        total += item.price;
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `<strong>${item.name}</strong> - ₹${item.price}`;
+        cartItems.appendChild(div);
+      });
+
+      document.getElementById("cart-total").textContent = total;
+    }
+
+    const cartBtn = document.getElementById("cart-btn");
+    const cartPopup = document.getElementById("cart-popup");
+
+    cartBtn.addEventListener("click", () => {
+      cartPopup.style.display = cartPopup.style.display === "block" ? "none" : "block";
+    });
+
+    renderProducts();
+  </script>
+
+</body>
+</html>
+{% endblock %}

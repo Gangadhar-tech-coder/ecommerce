@@ -1,0 +1,131 @@
+{% extends "base/base.html" %}
+
+{% block title %}Settings | Admin Dashboard{% endblock %}
+
+{% block header %}Settings{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Orders</title>
+  <style>
+    body {
+      background-color: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 2rem;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      color: #2c3e50;
+    }
+
+    .orders {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      tr {
+        margin-bottom: 1rem;
+      }
+
+      td {
+        padding-left: 50%;
+        position: relative;
+      }
+
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      th {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📦 Orders</h1>
+
+  <div class="orders">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Item</th>
+          <th>Status</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-label="Order ID">#1001</td>
+          <td data-label="Customer">Amit Kumar</td>
+          <td data-label="Item">Smartphone</td>
+          <td data-label="Status">Shipped</td>
+          <td data-label="Amount">₹12,000</td>
+        </tr>
+        <tr>
+          <td data-label="Order ID">#1002</td>
+          <td data-label="Customer">Neha Reddy</td>
+          <td data-label="Item">Laptop</td>
+          <td data-label="Status">Pending</td>
+          <td data-label="Amount">₹45,000</td>
+        </tr>
+        <tr>
+          <td data-label="Order ID">#1003</td>
+          <td data-label="Customer">Rahul Sen</td>
+          <td data-label="Item">Headphones</td>
+          <td data-label="Status">Delivered</td>
+          <td data-label="Amount">₹1,500</td>
+        </tr>
+        <tr>
+          <td data-label="Order ID">#1004</td>
+          <td data-label="Customer">Anita George</td>
+          <td data-label="Item">Camera</td>
+          <td data-label="Status">Cancelled</td>
+          <td data-label="Amount">₹9,800</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>
+{% endblock %}

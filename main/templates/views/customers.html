@@ -1,0 +1,352 @@
+{% extends "base/base.html" %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block header %}Welcome Back!{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Customers</title>
+    <style>
+        /* --- General Styling --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* --- Main Container --- */
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* --- Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2em;
+        }
+
+        /* --- Search Bar --- */
+        .search-bar {
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        #searchInput {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+        }
+
+        /* --- Customer Table --- */
+        .customer-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .customer-table th, .customer-table td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .customer-table thead {
+            background-color: #f8f9fa;
+        }
+
+        .customer-table th {
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            font-size: 0.85em;
+        }
+
+        .customer-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .customer-table td .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status.active {
+            background-color: #e7f5e7;
+            color: #28a745;
+        }
+        
+        .status.inactive {
+            background-color: #f8d7da;
+            color: #dc3545;
+        }
+
+        /* --- Add Customer Form --- */
+        .form-section {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 40px;
+            border: 1px solid #e9ecef;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        #addCustomerForm {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .btn-submit {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            height: 47px; /* Align with inputs */
+        }
+        
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .search-bar {
+                max-width: 100%;
+            }
+
+            #addCustomerForm {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Customers</h1>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search by name, email or location...">
+            </div>
+        </header>
+
+        <main>
+            <table class="customer-table">
+                <thead>
+                    <tr>
+                        <th>Customer ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="customerTableBody">
+                    </tbody>
+            </table>
+        </main>
+
+        <section class="form-section">
+            <h2>Add New Customer</h2>
+            <form id="addCustomerForm">
+                <div class="form-group">
+                    <label for="newName">Full Name</label>
+                    <input type="text" id="newName" required>
+                </div>
+                <div class="form-group">
+                    <label for="newEmail">Email Address</label>
+                    <input type="email" id="newEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="newLocation">Location</label>
+                    <input type="text" id="newLocation" required>
+                </div>
+                <button type="submit" class="btn-submit">Add Customer</button>
+            </form>
+        </section>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- Sample Data ---
+        let customers = [
+            { id: 'CUST001', name: 'Aarav Sharma', email: 'aarav.sharma@example.com', location: 'Mumbai', status: 'active' },
+            { id: 'CUST002', name: 'Saanvi Patel', email: 'saanvi.patel@example.com', location: 'Ahmedabad', status: 'active' },
+            { id: 'CUST003', name: 'Vivaan Singh', email: 'vivaan.singh@example.com', location: 'Delhi', status: 'inactive' },
+            { id: 'CUST004', name: 'Myra Reddy', email: 'myra.reddy@example.com', location: 'Hyderabad', status: 'active' },
+            { id: 'CUST005', name: 'Ayaan Gupta', email: 'ayaan.gupta@example.com', location: 'Bangalore', status: 'active' },
+            { id: 'CUST006', name: 'Diya Kumar', email: 'diya.kumar@example.com', location: 'Chennai', status: 'inactive' },
+            { id: 'CUST007', name: 'Ishaan Joshi', email: 'ishaan.joshi@example.com', location: 'Pune', status: 'active' },
+        ];
+
+        // --- DOM Elements ---
+        const tableBody = document.getElementById('customerTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const addForm = document.getElementById('addCustomerForm');
+        
+        // --- Functions ---
+
+        /**
+         * Renders the customer data into the table.
+         * @param {Array} customerList - The array of customer objects to display.
+         */
+        const renderTable = (customerList) => {
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            if (customerList.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No customers found.</td></tr>`;
+                return;
+            }
+
+            customerList.forEach(customer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${customer.id}</td>
+                    <td>${customer.name}</td>
+                    <td>${customer.email}</td>
+                    <td>${customer.location}</td>
+                    <td><span class="status ${customer.status}">${customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        };
+
+        /**
+         * Filters customers based on the search term.
+         */
+        const filterCustomers = () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filtered = customers.filter(customer =>
+                customer.name.toLowerCase().includes(searchTerm) ||
+                customer.email.toLowerCase().includes(searchTerm) ||
+                customer.location.toLowerCase().includes(searchTerm)
+            );
+            renderTable(filtered);
+        };
+
+        /**
+         * Adds a new customer to the list.
+         * @param {Event} event - The form submission event.
+         */
+        const addNewCustomer = (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            const name = document.getElementById('newName').value.trim();
+            const email = document.getElementById('newEmail').value.trim();
+            const location = document.getElementById('newLocation').value.trim();
+
+            if (name && email && location) {
+                // Generate a new unique ID
+                const newId = 'CUST' + String(customers.length + 1).padStart(3, '0');
+
+                const newCustomer = {
+                    id: newId,
+                    name: name,
+                    email: email,
+                    location: location,
+                    status: 'active' // Default status for new customers
+                };
+
+                customers.push(newCustomer); // Add to the main array
+                renderTable(customers); // Re-render the table with all customers
+                addForm.reset(); // Clear the form fields
+                searchInput.value = ''; // Clear search to show the new entry
+            } else {
+                alert('Please fill out all fields.');
+            }
+        };
+
+        // --- Event Listeners ---
+        searchInput.addEventListener('keyup', filterCustomers);
+        addForm.addEventListener('submit', addNewCustomer);
+
+        // --- Initial Render ---
+        renderTable(customers);
+    });
+</script>
+
+</body>
+</html>
+{% endblock     %}
